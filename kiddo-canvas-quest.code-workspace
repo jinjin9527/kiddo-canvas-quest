@@ -1,0 +1,17 @@
+{
+  "folders": [
+    {
+      "name": "code",
+      "path": "."
+    },
+    {
+      "name": "ai-docs",
+      "path": "../ai_workspace/projects/kiddo_canvas_quest"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": true
+    }
+  }
+}
