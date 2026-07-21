@@ -1,4 +1,12 @@
-// src/main.ts — M0-1 脚手架占位；M0-3 起装配 Canvas + Game Loop
+// src/main.ts — M0-6：装配入口（update / render 解耦）
+
+import { createGameLoop } from './game/gameLoop';
+import { bindKeyboard } from './input/keyboard';
+import { bindResize } from './input/resize';
+import { render } from './render/render';
+import { createInitialState } from './state/initialState';
+import { updateState } from './state/updateState';
+import type { GameAction, GameState } from './state/types';
 
 const canvas = document.querySelector<HTMLCanvasElement>('#game');
 if (!canvas) {
@@ -9,14 +17,28 @@ const ctx = canvas.getContext('2d');
 if (!ctx) {
   throw new Error('CanvasRenderingContext2D unavailable');
 }
+const context = ctx;
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.focus();
 
-ctx.fillStyle = '#1a1a2e';
-ctx.fillRect(0, 0, canvas.width, canvas.height);
-ctx.fillStyle = '#ffffff';
-ctx.font = '16px sans-serif';
-ctx.fillText('Kiddo Canvas Quest — M0-1 scaffold ready', 24, 40);
+let state: GameState = createInitialState();
+const pendingActions: GameAction[] = [];
 
-console.info('[kiddo] M0-1 Vite + TS scaffold OK');
+bindResize(window, (width, height) => {
+  pendingActions.push({ type: 'RESIZE', width, height });
+});
+
+bindKeyboard(window, (action) => {
+  pendingActions.push(action);
+});
+
+createGameLoop((deltaTime) => {
+  for (const action of pendingActions) {
+    state = updateState(state, action);
+  }
+  pendingActions.length = 0;
+  state = updateState(state, { type: 'TICK', deltaTime });
+  render(context, state);
+}).start();
+
+console.info('[kiddo] M0 complete — red square + keyboard + boundary');
