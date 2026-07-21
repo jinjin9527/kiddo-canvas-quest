@@ -3,6 +3,7 @@
 import { createGameLoop } from './game/gameLoop';
 import { bindKeyboard } from './input/keyboard';
 import { bindResize } from './input/resize';
+import { bindTouch } from './input/touch';
 import { render } from './render/render';
 import { createInitialState } from './state/initialState';
 import { updateState } from './state/updateState';
@@ -32,6 +33,10 @@ bindKeyboard(window, (action) => {
   pendingActions.push(action);
 });
 
+bindTouch(canvas, (action) => {
+  pendingActions.push(action);
+});
+
 createGameLoop((deltaTime) => {
   for (const action of pendingActions) {
     state = updateState(state, action);
@@ -41,4 +46,4 @@ createGameLoop((deltaTime) => {
   render(context, state);
 }).start();
 
-console.info('[kiddo] M0 complete — red square + keyboard + boundary');
+console.info('[kiddo] M1-2 — touch drag + keyboard + boundary');

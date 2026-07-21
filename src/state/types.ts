@@ -30,4 +30,6 @@ export type GameAction =
   | { type: 'RESIZE'; width: number; height: number }
   | { type: 'KEY_DOWN'; key: string }
   | { type: 'KEY_UP'; key: string }
-  | { type: 'TICK'; deltaTime: number };
+  | { type: 'TICK'; deltaTime: number }
+  | { type: 'TOUCH_MOVE'; dx: number; dy: number }
+  | { type: 'TOUCH_END' };

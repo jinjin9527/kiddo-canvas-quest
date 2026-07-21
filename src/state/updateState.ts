@@ -1,8 +1,15 @@
 // src/state/updateState.ts
 
-import type { GameAction, GameState } from './types';
+import type { GameAction, GameState, Vec2 } from './types';
 
 const SPEED = 200;
+const TOUCH_DEADZONE = 2;
+
+function setVelocityFromDelta(dx: number, dy: number): Vec2 {
+  const mag = Math.hypot(dx, dy);
+  if (mag < TOUCH_DEADZONE) return { x: 0, y: 0 };
+  return { x: (dx / mag) * SPEED, y: (dy / mag) * SPEED };
+}
 
 function clamp(v: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, v));
@@ -41,6 +48,17 @@ export function updateState(state: GameState, action: GameAction): GameState {
         player: { ...player, position: { x, y } },
       };
     }
+
+    case 'TOUCH_MOVE': {
+      const velocity = setVelocityFromDelta(action.dx, action.dy);
+      return { ...state, player: { ...state.player, velocity } };
+    }
+
+    case 'TOUCH_END':
+      return {
+        ...state,
+        player: { ...state.player, velocity: { x: 0, y: 0 } },
+      };
 
     default:
       return state;
