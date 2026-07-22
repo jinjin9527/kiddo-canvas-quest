@@ -46,4 +46,4 @@ createGameLoop((deltaTime) => {
   render(context, state);
 }).start();
 
-console.info('[kiddo] M1-2 — touch drag + keyboard + boundary');
+console.info('[kiddo] M1-3 — touch drag, no page scroll, keyboard OK');
