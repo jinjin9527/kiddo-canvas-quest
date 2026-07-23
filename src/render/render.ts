@@ -36,22 +36,14 @@ function renderLevelPlay(ctx: CanvasRenderingContext2D, state: GameState): void 
   const level = state.level;
   if (!level) return;
 
+  const titleBarHeight = 52;
   ctx.fillStyle = 'rgba(255,255,255,0.12)';
-  ctx.fillRect(0, 0, state.canvas.width, 110);
+  ctx.fillRect(0, 0, state.canvas.width, titleBarHeight);
   ctx.fillStyle = '#ffffff';
   ctx.font = '18px sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('小猫举着这个 — 找到一样的！', state.canvas.width / 2, 28);
-
-  const promptSize = 72;
-  drawImageFit(
-    ctx,
-    level.promptImage,
-    state.canvas.width / 2 - promptSize / 2,
-    40,
-    promptSize,
-    promptSize,
-  );
+  ctx.textBaseline = 'middle';
+  ctx.fillText('小猫举着这个 — 找到一样的！', state.canvas.width / 2, titleBarHeight / 2);
 
   for (const opt of level.options) {
     const { zone } = opt;
@@ -73,26 +65,37 @@ function renderLevelPlay(ctx: CanvasRenderingContext2D, state: GameState): void 
 
   const { player } = state;
   const catSize = player.size;
+  const heldSize = catSize * 0.72;
+  const heldGap = catSize * 0.06;
+  const catX = player.position.x - catSize / 2;
+  const catY = player.position.y - catSize / 2;
+
+  drawImageFit(ctx, CAT_IDLE, catX, catY, catSize, catSize);
+
   drawImageFit(
     ctx,
-    CAT_IDLE,
-    player.position.x - catSize / 2,
-    player.position.y - catSize / 2,
-    catSize,
-    catSize,
+    level.promptImage,
+    player.position.x - heldSize / 2,
+    catY - heldGap - heldSize,
+    heldSize,
+    heldSize,
   );
 
   if (level.phase === 'feedback') {
     const overlay = level.lastResult === 'correct' ? CAT_HAPPY : CAT_SAD;
-    const ow = catSize * 0.9;
-    drawImageFit(
-      ctx,
-      overlay,
-      player.position.x - ow / 2,
-      player.position.y - catSize - ow * 0.2,
-      ow,
-      ow,
-    );
+    const ow = catSize * 0.85;
+    const gap = catSize * 0.12;
+    const catLeft = player.position.x - catSize / 2;
+    const catRight = player.position.x + catSize / 2;
+    const oy = player.position.y - ow / 2;
+
+    let ox = catRight + gap;
+    if (ox + ow > state.canvas.width) {
+      ox = catLeft - gap - ow;
+    }
+    ox = Math.max(0, Math.min(state.canvas.width - ow, ox));
+
+    drawImageFit(ctx, overlay, ox, oy, ow, ow);
   }
 }
 

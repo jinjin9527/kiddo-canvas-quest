@@ -4,7 +4,8 @@ import type { GameState, LevelDefinition, LevelOptionPlaced, Rect } from '../sta
 
 export const OPTION_ZONE_SIZE = 80;
 const MARGIN = 28;
-const PROMPT_BAND = 130;
+/** 顶栏仅文案；题图随猫移动，不再占用固定顶区 */
+const PLAY_AREA_TOP = 56;
 const MAX_ATTEMPTS = 400;
 
 function rectsOverlap(a: Rect, b: Rect): boolean {
@@ -19,7 +20,7 @@ function rectsOverlap(a: Rect, b: Rect): boolean {
 function randomRect(width: number, height: number): Rect {
   return {
     x: MARGIN + Math.random() * (width - 2 * MARGIN - OPTION_ZONE_SIZE),
-    y: PROMPT_BAND + Math.random() * (height - PROMPT_BAND - MARGIN - OPTION_ZONE_SIZE),
+    y: PLAY_AREA_TOP + Math.random() * (height - PLAY_AREA_TOP - MARGIN - OPTION_ZONE_SIZE),
     width: OPTION_ZONE_SIZE,
     height: OPTION_ZONE_SIZE,
   };
@@ -54,7 +55,7 @@ export function layoutLevelOptions(
   for (let i = 0; i < MAX_ATTEMPTS; i++) {
     const candidate = {
       x: MARGIN + Math.random() * (canvasWidth - 2 * MARGIN),
-      y: PROMPT_BAND + Math.random() * (canvasHeight - PROMPT_BAND - 2 * MARGIN),
+      y: PLAY_AREA_TOP + Math.random() * (canvasHeight - PLAY_AREA_TOP - 2 * MARGIN),
     };
     const spawnRect: Rect = {
       x: candidate.x - OPTION_ZONE_SIZE / 2,
@@ -88,12 +89,19 @@ function clamp(v: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, v));
 }
 
+/** 每关开局 / 错关重来：从本关四个选项里随机决定猫举着哪一个 */
+function pickRandomTarget(def: LevelDefinition): { promptImage: string; correctOptionId: string } {
+  const choice = def.options[Math.floor(Math.random() * def.options.length)];
+  return { promptImage: choice.image, correctOptionId: choice.id };
+}
+
 export function beginLevelPlay(state: GameState, index: number): GameState {
   if (!state.level) return state;
   const def = state.level.definitions[index];
   if (!def) return state;
 
   const { options, spawn } = layoutLevelOptions(def, state.canvas.width, state.canvas.height);
+  const target = pickRandomTarget(def);
 
   return {
     ...state,
@@ -103,8 +111,8 @@ export function beginLevelPlay(state: GameState, index: number): GameState {
       phase: 'play',
       lastResult: 'none',
       feedbackTimer: 0,
-      promptImage: def.promptImage,
-      correctOptionId: def.correctOptionId,
+      promptImage: target.promptImage,
+      correctOptionId: target.correctOptionId,
       options,
     },
     player: {

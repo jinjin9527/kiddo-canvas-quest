@@ -3,7 +3,7 @@
 import { beginLevelPlay, playerHitsOption, relayoutIfPlaying } from '../game/layoutLevel';
 import type { GameAction, GameState } from './types';
 
-const SPEED = 200;
+const SPEED = 340;
 const TOUCH_DEADZONE = 2;
 const FEEDBACK_DURATION = 2;
 
