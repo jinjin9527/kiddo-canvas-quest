@@ -1,0 +1,52 @@
+{
+  "levels": [
+    {
+      "id": "fruit-1",
+      "theme": "fruit",
+      "promptImage": "/assets/levels/apple.svg",
+      "correctOptionId": "apple",
+      "options": [
+        { "id": "apple", "label": "苹果", "image": "/assets/levels/apple.svg" },
+        { "id": "banana", "label": "香蕉", "image": "/assets/levels/banana.svg" },
+        { "id": "grape", "label": "葡萄", "image": "/assets/levels/grape.svg" },
+        { "id": "orange", "label": "橙子", "image": "/assets/levels/orange.svg" }
+      ]
+    },
+    {
+      "id": "ball-1",
+      "theme": "ball",
+      "promptImage": "/assets/levels/soccer.svg",
+      "correctOptionId": "soccer",
+      "options": [
+        { "id": "soccer", "label": "足球", "image": "/assets/levels/soccer.svg" },
+        { "id": "basketball", "label": "篮球", "image": "/assets/levels/basketball.svg" },
+        { "id": "tennis", "label": "网球", "image": "/assets/levels/tennis.svg" },
+        { "id": "volleyball", "label": "排球", "image": "/assets/levels/volleyball.svg" }
+      ]
+    },
+    {
+      "id": "vehicle-1",
+      "theme": "vehicle",
+      "promptImage": "/assets/levels/car.svg",
+      "correctOptionId": "car",
+      "options": [
+        { "id": "car", "label": "汽车", "image": "/assets/levels/car.svg" },
+        { "id": "bus", "label": "公交", "image": "/assets/levels/bus.svg" },
+        { "id": "train", "label": "火车", "image": "/assets/levels/train.svg" },
+        { "id": "plane", "label": "飞机", "image": "/assets/levels/plane.svg" }
+      ]
+    },
+    {
+      "id": "snack-1",
+      "theme": "snack",
+      "promptImage": "/assets/levels/cookie.svg",
+      "correctOptionId": "cookie",
+      "options": [
+        { "id": "cookie", "label": "饼干", "image": "/assets/levels/cookie.svg" },
+        { "id": "candy", "label": "糖果", "image": "/assets/levels/candy.svg" },
+        { "id": "chip", "label": "薯片", "image": "/assets/levels/chip.svg" },
+        { "id": "cake", "label": "蛋糕", "image": "/assets/levels/cake.svg" }
+      ]
+    }
+  ]
+}

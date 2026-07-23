@@ -1,13 +1,21 @@
-// src/main.ts — M0-6：装配入口（update / render 解耦）
+// src/main.ts — 装配入口（update / render 解耦）
 
 import { createGameLoop } from './game/gameLoop';
 import { bindKeyboard } from './input/keyboard';
 import { bindResize } from './input/resize';
+import { bindTap } from './input/tap';
 import { bindTouch } from './input/touch';
+import { loadImages } from './render/imageCache';
 import { render } from './render/render';
 import { createInitialState } from './state/initialState';
 import { updateState } from './state/updateState';
-import type { GameAction, GameState } from './state/types';
+import type { GameAction, GameState, LevelsFile } from './state/types';
+
+const IMAGE_URLS = [
+  '/assets/cat-idle.png',
+  '/assets/cat-happy.svg',
+  '/assets/cat-sad.svg',
+];
 
 const canvas = document.querySelector<HTMLCanvasElement>('#game');
 if (!canvas) {
@@ -25,16 +33,28 @@ canvas.focus();
 let state: GameState = createInitialState();
 const pendingActions: GameAction[] = [];
 
+function pushAction(action: GameAction): void {
+  pendingActions.push(action);
+}
+
 bindResize(window, (width, height) => {
-  pendingActions.push({ type: 'RESIZE', width, height });
+  pushAction({ type: 'RESIZE', width, height });
 });
 
 bindKeyboard(window, (action) => {
-  pendingActions.push(action);
+  pushAction(action);
 });
 
 bindTouch(canvas, (action) => {
-  pendingActions.push(action);
+  pushAction(action);
+});
+
+let lastTapAt = 0;
+bindTap(canvas, () => {
+  const now = Date.now();
+  if (now - lastTapAt < 350) return;
+  lastTapAt = now;
+  pushAction({ type: 'KEY_DOWN', key: 'Enter' });
 });
 
 createGameLoop((deltaTime) => {
@@ -46,4 +66,24 @@ createGameLoop((deltaTime) => {
   render(context, state);
 }).start();
 
-console.info('[kiddo] M1-3 — touch drag, no page scroll, keyboard OK');
+async function bootstrap(): Promise<void> {
+  try {
+    const res = await fetch('/levels.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = (await res.json()) as LevelsFile;
+    const urls = [...IMAGE_URLS];
+    for (const level of data.levels) {
+      urls.push(level.promptImage);
+      for (const opt of level.options) urls.push(opt.image);
+    }
+    await loadImages(urls);
+    pushAction({ type: 'LEVELS_LOADED', levels: data.levels });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : 'unknown error';
+    pushAction({ type: 'LEVELS_LOAD_FAILED', message });
+  }
+}
+
+void bootstrap();
+
+console.info('[kiddo] M3 — match levels, random options, cat sprite');
