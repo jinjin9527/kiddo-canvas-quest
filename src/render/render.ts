@@ -43,7 +43,7 @@ function renderLevelPlay(ctx: CanvasRenderingContext2D, state: GameState): void 
   ctx.font = '18px sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('小猫举着这个 — 找到一样的！', state.canvas.width / 2, titleBarHeight / 2);
+  ctx.fillText('小猫连连看', state.canvas.width / 2, titleBarHeight / 2);
 
   for (const opt of level.options) {
     const { zone } = opt;
