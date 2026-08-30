@@ -1,13 +1,14 @@
 // src/render/campaign2Render.ts — 08 竖版 · Figma 算式 + 答题卡
 
+import { assetPath } from '../assetPath';
 import { KIDS_COPY } from '../copy/kidsJa';
 import { layoutCampaign2Bands } from '../game/campaign2CardLayout';
 import type { Campaign2LevelDef, GameState, Rect } from '../state/types';
 import { drawImageFit } from './imageCache';
 
-const CAT_IDLE = '/assets/cat-idle.png';
-const CAT_HAPPY = '/assets/cat-happy.svg';
-const CAT_SAD = '/assets/cat-sad.svg';
+const CAT_IDLE = assetPath('assets/cat-idle.png');
+const CAT_HAPPY = assetPath('assets/cat-happy.svg');
+const CAT_SAD = assetPath('assets/cat-sad.svg');
 
 const BOX_BORDER = '#e8c547';
 const BOX_FILL = '#ffffff';

@@ -1,14 +1,15 @@
 // src/render/render.ts
 
 import { KIDS_COPY } from '../copy/kidsJa';
+import { assetPath } from '../assetPath';
 import type { GameState } from '../state/types';
 import { drawImageFit } from './imageCache';
 import { renderCampaign2Play } from './campaign2Render';
 import { drawMenuButton, layoutMenuScreen } from '../ui/menuLayout';
 
-const CAT_IDLE = '/assets/cat-idle.png';
-const CAT_HAPPY = '/assets/cat-happy.svg';
-const CAT_SAD = '/assets/cat-sad.svg';
+const CAT_IDLE = assetPath('assets/cat-idle.png');
+const CAT_HAPPY = assetPath('assets/cat-happy.svg');
+const CAT_SAD = assetPath('assets/cat-sad.svg');
 
 function clearBackground(ctx: CanvasRenderingContext2D, state: GameState): void {
   const { canvas, viewport } = state;
