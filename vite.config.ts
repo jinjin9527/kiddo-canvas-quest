@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  // GitHub Pages project site: https://<user>.github.io/kiddo-canvas-quest/
+  base: '/kiddo-canvas-quest/',
   server: {
     host: '0.0.0.0',
     port: 5173,

@@ -1,18 +1,30 @@
 // src/render/render.ts
 
+import { KIDS_COPY } from '../copy/kidsJa';
 import type { GameState } from '../state/types';
 import { drawImageFit } from './imageCache';
+import { renderCampaign2Play } from './campaign2Render';
+import { drawMenuButton, layoutMenuScreen } from '../ui/menuLayout';
 
 const CAT_IDLE = '/assets/cat-idle.png';
 const CAT_HAPPY = '/assets/cat-happy.svg';
 const CAT_SAD = '/assets/cat-sad.svg';
 
 function clearBackground(ctx: CanvasRenderingContext2D, state: GameState): void {
-  const { canvas } = state;
+  const { canvas, viewport } = state;
   ctx.canvas.width = canvas.width;
   ctx.canvas.height = canvas.height;
   ctx.fillStyle = '#1a1a2e';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  if (state.scene === 'PLAY' && state.campaignId === 'campaign2') {
+    const scale = Math.min(viewport.width / canvas.width, viewport.height / canvas.height);
+    ctx.canvas.style.width = `${canvas.width * scale}px`;
+    ctx.canvas.style.height = `${canvas.height * scale}px`;
+  } else {
+    ctx.canvas.style.width = '100%';
+    ctx.canvas.style.height = '100%';
+  }
 }
 
 function drawCenteredText(
@@ -43,7 +55,7 @@ function renderLevelPlay(ctx: CanvasRenderingContext2D, state: GameState): void 
   ctx.font = '18px sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('小猫连连看', state.canvas.width / 2, titleBarHeight / 2);
+  ctx.fillText(KIDS_COPY.title, state.canvas.width / 2, titleBarHeight / 2);
 
   for (const opt of level.options) {
     const { zone } = opt;
@@ -100,6 +112,10 @@ function renderLevelPlay(ctx: CanvasRenderingContext2D, state: GameState): void 
 }
 
 function renderPlay(ctx: CanvasRenderingContext2D, state: GameState): void {
+  if (state.campaignId === 'campaign2') {
+    renderCampaign2Play(ctx, state);
+    return;
+  }
   if (state.level && state.level.definitions.length > 0) {
     renderLevelPlay(ctx, state);
     return;
@@ -119,12 +135,37 @@ export function render(ctx: CanvasRenderingContext2D, state: GameState): void {
 
   switch (state.scene) {
     case 'MENU': {
+      const layout = layoutMenuScreen(state.canvas);
+      const cx = state.canvas.width / 2;
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
       if (state.isLoading) {
-        drawCenteredText(ctx, state, ['Kiddo Canvas Quest', '加载关卡…'], 28);
-      } else if (state.loadError) {
-        drawCenteredText(ctx, state, ['加载失败', state.loadError], 22);
-      } else {
-        drawCenteredText(ctx, state, ['Kiddo Canvas Quest', '点击屏幕开始', '（电脑可 Enter）'], 26);
+        ctx.font = '28px sans-serif';
+        ctx.fillText(KIDS_COPY.title, cx, layout.titleY);
+        ctx.font = '20px sans-serif';
+        ctx.fillText(KIDS_COPY.loading, cx, layout.subtitleY);
+        break;
+      }
+
+      ctx.font = '28px sans-serif';
+      ctx.fillText(KIDS_COPY.title, cx, layout.titleY);
+      ctx.font = '20px sans-serif';
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.fillText(KIDS_COPY.subtitle, cx, layout.subtitleY);
+
+      const ready = !state.campaign2LoadError && !!state.campaign2;
+      drawMenuButton(ctx, layout.start, KIDS_COPY.start, ready);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      ctx.font = '13px sans-serif';
+      ctx.fillText(KIDS_COPY.tapOrEnter, cx, layout.hintY);
+
+      if (state.campaign2LoadError) {
+        ctx.fillStyle = '#ff9999';
+        ctx.font = '14px sans-serif';
+        ctx.fillText(KIDS_COPY.loadFailed, cx, layout.start.y - 14);
       }
       break;
     }
@@ -132,14 +173,20 @@ export function render(ctx: CanvasRenderingContext2D, state: GameState): void {
       renderPlay(ctx, state);
       break;
     case 'BOOT':
-      drawCenteredText(ctx, state, ['加载中…'], 24);
+      drawCenteredText(ctx, state, [KIDS_COPY.loading], 24);
       break;
     case 'QUIZ':
-      drawCenteredText(ctx, state, ['（预留）'], 24);
+      drawCenteredText(ctx, state, [KIDS_COPY.reserved], 24);
       break;
-    case 'WIN':
-      drawCenteredText(ctx, state, ['恭喜通关！', '点击屏幕返回菜单', '（电脑可 Enter）'], 26);
+    case 'WIN': {
+      drawCenteredText(
+        ctx,
+        state,
+        [KIDS_COPY.clear, KIDS_COPY.backToTitle, KIDS_COPY.tapOrEnter],
+        26,
+      );
       break;
+    }
     default: {
       const _exhaustive: never = state.scene;
       return _exhaustive;

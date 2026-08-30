@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "title": "こねこゲーム",
+  "levels": [
+    {
+      "id": "kana-ringo-1",
+      "kind": "kana_fill",
+      "script": "hiragana",
+      "word": "りんご",
+      "gapIndex": 1,
+      "hintEmoji": "🍎",
+      "options": [
+        { "id": "n", "glyph": "ん" },
+        { "id": "ru", "glyph": "る" },
+        { "id": "so", "glyph": "そ" }
+      ]
+    },
+    {
+      "id": "kana-neko-1",
+      "kind": "kana_fill",
+      "script": "hiragana",
+      "word": "ねこ",
+      "gapIndex": 0,
+      "hintEmoji": "🐱",
+      "options": [
+        { "id": "ne", "glyph": "ね" },
+        { "id": "no", "glyph": "の" },
+        { "id": "ko", "glyph": "こ" }
+      ]
+    },
+    {
+      "id": "kana-uma-1",
+      "kind": "kana_fill",
+      "script": "hiragana",
+      "word": "うま",
+      "gapIndex": 1,
+      "hintEmoji": "🐴",
+      "options": [
+        { "id": "u", "glyph": "う" },
+        { "id": "ma", "glyph": "ま" },
+        { "id": "mi", "glyph": "み" }
+      ]
+    },
+    {
+      "id": "kana-sakura-1",
+      "kind": "kana_fill",
+      "script": "hiragana",
+      "word": "さくら",
+      "gapIndex": 2,
+      "hintEmoji": "🌸",
+      "options": [
+        { "id": "ku", "glyph": "く" },
+        { "id": "ra", "glyph": "ら" },
+        { "id": "ro", "glyph": "ろ" }
+      ]
+    }
+  ]
+}

@@ -1,21 +1,15 @@
 // src/main.ts — 装配入口（update / render 解耦）
 
+import { bootstrapCampaigns } from './game/loadCampaigns';
 import { createGameLoop } from './game/gameLoop';
 import { bindKeyboard } from './input/keyboard';
 import { bindResize } from './input/resize';
 import { bindTap } from './input/tap';
 import { bindTouch } from './input/touch';
-import { loadImages } from './render/imageCache';
 import { render } from './render/render';
 import { createInitialState } from './state/initialState';
 import { updateState } from './state/updateState';
-import type { GameAction, GameState, LevelsFile } from './state/types';
-
-const IMAGE_URLS = [
-  '/assets/cat-idle.png',
-  '/assets/cat-happy.svg',
-  '/assets/cat-sad.svg',
-];
+import type { GameAction, GameState } from './state/types';
 
 const canvas = document.querySelector<HTMLCanvasElement>('#game');
 if (!canvas) {
@@ -50,11 +44,18 @@ bindTouch(canvas, (action) => {
 });
 
 let lastTapAt = 0;
-bindTap(canvas, () => {
+bindTap(canvas, (x, y) => {
   const now = Date.now();
   if (now - lastTapAt < 350) return;
   lastTapAt = now;
-  pushAction({ type: 'KEY_DOWN', key: 'Enter' });
+
+  if (state.scene === 'MENU') {
+    pushAction({ type: 'MENU_TAP', x, y });
+    return;
+  }
+  if (state.scene === 'WIN') {
+    pushAction({ type: 'KEY_DOWN', key: 'Enter' });
+  }
 });
 
 createGameLoop((deltaTime) => {
@@ -66,24 +67,6 @@ createGameLoop((deltaTime) => {
   render(context, state);
 }).start();
 
-async function bootstrap(): Promise<void> {
-  try {
-    const res = await fetch('/levels.json');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = (await res.json()) as LevelsFile;
-    const urls = [...IMAGE_URLS];
-    for (const level of data.levels) {
-      urls.push(level.promptImage);
-      for (const opt of level.options) urls.push(opt.image);
-    }
-    await loadImages(urls);
-    pushAction({ type: 'LEVELS_LOADED', levels: data.levels });
-  } catch (e) {
-    const message = e instanceof Error ? e.message : 'unknown error';
-    pushAction({ type: 'LEVELS_LOAD_FAILED', message });
-  }
-}
+bootstrapCampaigns(pushAction);
 
-void bootstrap();
-
-console.info('[kiddo] M3 — match levels, random options, cat sprite');
+console.info('[kiddo] こねこゲーム — kana-only demo');

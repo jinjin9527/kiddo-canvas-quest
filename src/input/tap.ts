@@ -1,8 +1,25 @@
-// src/input/tap.ts — 轻点（MENU / WIN 等效 Enter）
+// src/input/tap.ts — 轻点（坐标进 canvas 空间）
 
 const TAP_MOVE_THRESHOLD_PX = 14;
 
-export function bindTap(canvas: HTMLCanvasElement, onTap: () => void): void {
+export function clientToCanvas(
+  canvas: HTMLCanvasElement,
+  clientX: number,
+  clientY: number,
+): { x: number; y: number } {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  return {
+    x: (clientX - rect.left) * scaleX,
+    y: (clientY - rect.top) * scaleY,
+  };
+}
+
+export function bindTap(
+  canvas: HTMLCanvasElement,
+  onTap: (x: number, y: number) => void,
+): void {
   let startX = 0;
   let startY = 0;
   let tracking = false;
@@ -31,7 +48,8 @@ export function bindTap(canvas: HTMLCanvasElement, onTap: () => void): void {
       const dx = t.clientX - startX;
       const dy = t.clientY - startY;
       if (dx * dx + dy * dy <= TAP_MOVE_THRESHOLD_PX * TAP_MOVE_THRESHOLD_PX) {
-        onTap();
+        const p = clientToCanvas(canvas, t.clientX, t.clientY);
+        onTap(p.x, p.y);
       }
     },
     { passive: true },
@@ -39,6 +57,7 @@ export function bindTap(canvas: HTMLCanvasElement, onTap: () => void): void {
 
   canvas.addEventListener('click', (e) => {
     if (e.detail === 0) return;
-    onTap();
+    const p = clientToCanvas(canvas, e.clientX, e.clientY);
+    onTap(p.x, p.y);
   });
 }
