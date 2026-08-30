@@ -8,6 +8,8 @@
 
 https://jinjin9527.github.io/kiddo-canvas-quest/
 
+**固定二维码**：[`docs/koneko-game-qr.png`](./docs/koneko-game-qr.png)
+
 ## 本地开发
 
 ```bash
